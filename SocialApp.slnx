@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SocialApp.App/SocialApp.App.csproj" />
+  <Project Path="SocialApp.Core/SocialApp.Core.csproj" />
+</Solution>
