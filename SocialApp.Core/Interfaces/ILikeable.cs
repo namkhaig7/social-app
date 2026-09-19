@@ -1,6 +1,7 @@
 namespace SocialApp.Core.Interfaces;
 
-/// <summary>Something that can be liked (post, comment, ...).</summary>
+
+//Like darj boloh interface
 public interface ILikeable
 {
     int LikesCount { get; }

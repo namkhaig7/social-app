@@ -1,4 +1,9 @@
 <Solution>
   <Project Path="SocialApp.App/SocialApp.App.csproj" />
+  <Project Path="SocialApp.Controls/SocialApp.Controls.csproj" />
+  <Project Path="SocialApp.Core.Tests/SocialApp.Core.Tests.csproj" />
   <Project Path="SocialApp.Core/SocialApp.Core.csproj" />
+  <Project Path="SocialApp.Desktop/SocialApp.Desktop.csproj" />
+  <Project Path="SocialApp.Images.Tests/SocialApp.Images.Tests.csproj" />
+  <Project Path="SocialApp.Images/SocialApp.Images.csproj" />
 </Solution>

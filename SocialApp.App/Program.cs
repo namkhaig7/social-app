@@ -1,12 +1,26 @@
+using SocialApp.Core.Data;
+using SocialApp.Core.Models;
 using SocialApp.Core.Repositories;
 using SocialApp.Core.Services;
 
-// Wire up repositories and services (this is the only place that knows about both).
-var userService = new UserService(new UserRepository());
-var postService = new PostService(new PostRepository());
+// Demo tul ajillah bur shineer ehluulne
+const string DbFile = "socialapp-demo.db";
+if (File.Exists(DbFile)) File.Delete(DbFile);
 
-var mandu = userService.Register("mandu", 20, "mandu@mail.com");
-var namhai = userService.Register("namhai", 21, "namhai@mail.com");
+var database = new SocialAppDatabase(DbFile);
+database.CreateSchema();
+
+var commentRepository = new SqliteCommentRepository(database);
+var reactionRepository = new SqliteReactionRepository(database);
+
+var userService = new UserService(new SqliteUserRepository(database));
+var postService = new PostService(
+    new SqlitePostRepository(database, commentRepository, reactionRepository),
+    commentRepository,
+    reactionRepository);
+
+var mandu = userService.Register("mandu", 20, "mandu@mail.com", "1234");
+var namhai = userService.Register("namhai", 21, "namhai@mail.com", "1234");
 
 Console.WriteLine("--- Users ---");
 foreach (var user in userService.GetAllUsers())
@@ -15,17 +29,19 @@ foreach (var user in userService.GetAllUsers())
 // Mandu posts smth
 var post = postService.CreatePost(mandu.Id, "Sain baitsgaana uu, Yu bn!");
 
-// tuhain posttoi haritsaj bgaa ni
-postService.LikePost(post.Id);
-postService.LikePost(post.Id);
-postService.CommentOnPost(post.Id, bob.Id, "Nice post!");
+postService.ReactPost(post.Id, mandu.Id, ReactionType.Like);
+postService.ReactPost(post.Id, namhai.Id, ReactionType.Haha);
+
+postService.ReactPost(post.Id, namhai.Id, ReactionType.Angry);
+postService.CommentOnPost(post.Id, namhai.Id, "Nice post!");
 postService.SharePost(post.Id);
 
 Console.WriteLine("\n--- Posts ---");
 foreach (var p in postService.GetAllPosts())
 {
     Console.WriteLine(p.Preview());
-    Console.WriteLine($"  Likes: {p.LikesCount}, Shares: {p.SharesCount}");
+    var reactions = string.Join(", ", p.Reactions.Select(r => $"{r.Key}:{r.Value}"));
+    Console.WriteLine($"  Reactions: {reactions}, Shares: {p.SharesCount}");
     foreach (var comment in p.Comments)
         Console.WriteLine($"  - {comment.Preview()}");
 }

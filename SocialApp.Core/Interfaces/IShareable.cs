@@ -1,6 +1,6 @@
 namespace SocialApp.Core.Interfaces;
 
-/// <summary>Something that can be shared/reposted.</summary>
+/// Shareable
 public interface IShareable
 {
     int SharesCount { get; }

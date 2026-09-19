@@ -2,7 +2,7 @@ using SocialApp.Core.Models;
 
 namespace SocialApp.Core.Interfaces;
 
-/// <summary>Something that can receive comments.</summary>
+//Comment bichdeg interface
 public interface ICommentable
 {
     IReadOnlyList<Comment> Comments { get; }

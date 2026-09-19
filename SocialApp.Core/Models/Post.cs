@@ -2,28 +2,38 @@ using SocialApp.Core.Interfaces;
 
 namespace SocialApp.Core.Models;
 
-/// <summary>
-/// A post. Inherits Content (abstract class) and implements three
-/// interfaces to show all the actions a post supports: like, comment, share.
-/// </summary>
-public class Post : Content, ILikeable, ICommentable, IShareable
+
+public class Post : Content, IReactable, ICommentable, IShareable
 {
     private readonly List<Comment> _comments = [];
 
-    public int LikesCount { get; private set; }
+    // Hereglegch buriin ODOOgiin reaction - neg hun neg l reactiontai baina (FB shig).
+    // Ug hun deed shineer darval, ehnii reaction ni songosnoor solig dana.
+    private readonly Dictionary<int, ReactionType> _userReactions = new();
+
     public int SharesCount { get; private set; }
     public IReadOnlyList<Comment> Comments => _comments;
 
-    public Post(int id, int authorId, string text) : base(id, authorId, text)
+    public IReadOnlyDictionary<ReactionType, int> Reactions =>
+        Enum.GetValues<ReactionType>().ToDictionary(type => type, type => _userReactions.Values.Count(r => r == type));
+
+    // Zurgiig path-aar ni hadgalna (Core ni Windows/GDI+ -ees hamaarahgui)
+    public string? ImagePath { get; }
+
+    public Post(
+        int id,
+        int authorId,
+        string text,
+        string? imagePath = null,
+        int sharesCount = 0,
+        DateTime? createdAt = null)
+        : base(id, authorId, text, createdAt)
     {
+        ImagePath = imagePath;
+        SharesCount = sharesCount;
     }
 
-    public void Like() => LikesCount++;
-
-    public void Unlike()
-    {
-        if (LikesCount > 0) LikesCount--;
-    }
+    public void React(int userId, ReactionType type) => _userReactions[userId] = type;
 
     public void Share() => SharesCount++;
 
