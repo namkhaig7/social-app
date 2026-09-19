@@ -26,7 +26,6 @@ static class Program
             commentRepository,
             reactionRepository);
 
-        // Demo ugugdliig zowhon hooson DB deer neg l udaa uusgene (nuuts ug ni "1234")
         if (userService.GetAllUsers().Count == 0)
         {
             var mandu = userService.Register("mandu", 20, "mandu@mail.com", "1234");

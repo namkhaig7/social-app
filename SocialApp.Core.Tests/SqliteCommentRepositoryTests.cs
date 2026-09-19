@@ -12,7 +12,7 @@ public class SqliteCommentRepositoryTests : DatabaseTestBase
 
         var loaded = Comments.GetByPost(5);
 
-        Assert.AreEqual(1, loaded.Count);
+        Assert.HasCount(1, loaded);
         Assert.AreEqual(1, loaded[0].Id);
         Assert.AreEqual(2, loaded[0].AuthorId);
         Assert.AreEqual("Nice post!", loaded[0].Text);
@@ -37,14 +37,14 @@ public class SqliteCommentRepositoryTests : DatabaseTestBase
 
         var loaded = Comments.GetByPost(1);
 
-        Assert.AreEqual(1, loaded.Count);
+        Assert.HasCount(1, loaded);
         Assert.AreEqual("on post 1", loaded[0].Text);
     }
 
     [TestMethod]
     public void GetByPost_ReturnsEmpty_WhenNoComments()
     {
-        Assert.AreEqual(0, Comments.GetByPost(42).Count);
+        Assert.IsEmpty(Comments.GetByPost(42));
     }
 
     [TestMethod]
@@ -55,8 +55,8 @@ public class SqliteCommentRepositoryTests : DatabaseTestBase
 
         Comments.DeleteByPost(1);
 
-        Assert.AreEqual(0, Comments.GetByPost(1).Count);
-        Assert.AreEqual(1, Comments.GetByPost(2).Count);
+        Assert.IsEmpty(Comments.GetByPost(1));
+        Assert.HasCount(1, Comments.GetByPost(2));
     }
 
     [TestMethod]

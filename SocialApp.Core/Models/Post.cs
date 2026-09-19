@@ -35,6 +35,9 @@ public class Post : Content, IReactable, ICommentable, IShareable
 
     public void React(int userId, ReactionType type) => _userReactions[userId] = type;
 
+    public ReactionType? GetUserReaction(int userId) => 
+        _userReactions.TryGetValue(userId, out var reaction) ? reaction : null;
+
     public void Share() => SharesCount++;
 
     public void AddComment(Comment comment) => _comments.Add(comment);

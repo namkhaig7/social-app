@@ -26,35 +26,126 @@ public class LoginForm : Form
         _userService = userService;
 
         AutoScaleMode = AutoScaleMode.None;
-        Font = new Font("Segoe UI", 11F);
-        ClientSize = new Size(420, 320);
+        Font = new Font("Segoe UI", 10F);
+        ClientSize = new Size(450, 380);
         FormBorderStyle = FormBorderStyle.FixedDialog;
         MaximizeBox = false;
         MinimizeBox = false;
         StartPosition = FormStartPosition.CenterScreen;
+        BackColor = Color.FromArgb(240, 242, 245);
+        
+        // Main container with padding
+        var container = new Panel
+        {
+            Dock = DockStyle.Fill,
+            Padding = new Padding(40, 30, 40, 30),
+            BackColor = Color.Transparent
+        };
+        
+        // Title
+        var titleLabel = new Label
+        {
+            Text = "SocialApp",
+            Font = new Font("Segoe UI", 20F, FontStyle.Bold),
+            AutoSize = true,
+            Left = 40,
+            Top = 30,
+            ForeColor = Color.FromArgb(0, 123, 255)
+        };
+        container.Controls.Add(titleLabel);
 
-        Controls.Add(new Label { Text = "Username:", Left = 30, Top = 28, AutoSize = true });
-        _usernameInput = new TextBox { Left = 30, Top = 54, Width = 350 };
-        Controls.Add(_usernameInput);
+        Controls.Add(new Label 
+        { 
+            Text = "Username", 
+            Left = 40, 
+            Top = 90, 
+            AutoSize = true,
+            Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+            ForeColor = Color.FromArgb(70, 70, 70)
+        });
+        _usernameInput = new TextBox 
+        { 
+            Left = 40, 
+            Top = 115, 
+            Width = 370,
+            Height = 32,
+            Font = new Font("Segoe UI", 10F),
+            BorderStyle = BorderStyle.FixedSingle
+        };
+        container.Controls.Add(_usernameInput);
 
-        Controls.Add(new Label { Text = "Password:", Left = 30, Top = 96, AutoSize = true });
-        // PasswordChar - bichij bui nuuts ug haragdahgui
-        _passwordInput = new TextBox { Left = 30, Top = 122, Width = 350, PasswordChar = '*' };
-        Controls.Add(_passwordInput);
+        Controls.Add(new Label 
+        { 
+            Text = "Password", 
+            Left = 40, 
+            Top = 160, 
+            AutoSize = true,
+            Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+            ForeColor = Color.FromArgb(70, 70, 70)
+        });
+        _passwordInput = new TextBox 
+        { 
+            Left = 40, 
+            Top = 185, 
+            Width = 370,
+            Height = 32,
+            Font = new Font("Segoe UI", 10F),
+            PasswordChar = '●',
+            BorderStyle = BorderStyle.FixedSingle
+        };
+        container.Controls.Add(_passwordInput);
 
-        // Nas zowhon sign up horm deer haragdana
-        _ageLabel = new Label { Text = "Age:", Left = 30, Top = 164, AutoSize = true };
-        Controls.Add(_ageLabel);
-        _ageInput = new TextBox { Left = 30, Top = 190, Width = 350 };
-        Controls.Add(_ageInput);
+        _ageLabel = new Label 
+        { 
+            Text = "Age", 
+            Left = 40, 
+            Top = 230, 
+            AutoSize = true,
+            Font = new Font("Segoe UI", 9.5F, FontStyle.Bold),
+            ForeColor = Color.FromArgb(70, 70, 70)
+        };
+        container.Controls.Add(_ageLabel);
+        
+        _ageInput = new TextBox 
+        { 
+            Left = 40, 
+            Top = 255, 
+            Width = 370,
+            Height = 32,
+            Font = new Font("Segoe UI", 10F),
+            BorderStyle = BorderStyle.FixedSingle
+        };
+        container.Controls.Add(_ageInput);
 
-        _primaryButton = new Button { Left = 30, Top = 236, Width = 170, Height = 38 };
+        _primaryButton = new ModernButton 
+        { 
+            Left = 40, 
+            Top = 305, 
+            Width = 180, 
+            Height = 40,
+            Font = new Font("Segoe UI", 10F, FontStyle.Bold),
+            BackColor = Color.FromArgb(0, 123, 255),
+            HoverBackColor = Color.FromArgb(0, 105, 217),
+            ForeColor = Color.White
+        };
         _primaryButton.Click += (_, _) => Submit();
-        Controls.Add(_primaryButton);
+        container.Controls.Add(_primaryButton);
 
-        _switchButton = new Button { Left = 210, Top = 236, Width = 170, Height = 38 };
+        _switchButton = new ModernButton 
+        { 
+            Left = 230, 
+            Top = 305, 
+            Width = 180, 
+            Height = 40,
+            Font = new Font("Segoe UI", 10F),
+            BackColor = Color.FromArgb(108, 117, 125),
+            HoverBackColor = Color.FromArgb(90, 98, 104),
+            ForeColor = Color.White
+        };
         _switchButton.Click += (_, _) => SetMode(!_signUpMode);
-        Controls.Add(_switchButton);
+        container.Controls.Add(_switchButton);
+        
+        Controls.Add(container);
 
         AcceptButton = _primaryButton;
         SetMode(false);

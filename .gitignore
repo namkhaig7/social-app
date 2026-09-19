@@ -1,2 +1,11 @@
 bin/
 obj/
+
+*.db
+*.db-shm
+*.db-wal
+images/
+TestResults/
+.vs/
+
+*.user

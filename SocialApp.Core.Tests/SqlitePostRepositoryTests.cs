@@ -50,7 +50,7 @@ public class SqlitePostRepositoryTests : DatabaseTestBase
 
         var loaded = Posts.GetById(1)!;
 
-        Assert.AreEqual(1, loaded.Comments.Count);
+        Assert.HasCount(1, loaded.Comments);
         Assert.AreEqual("Nice post!", loaded.Comments[0].Text);
         Assert.AreEqual(2, loaded.Reactions[ReactionType.Haha]);
         Assert.AreEqual(0, loaded.Reactions[ReactionType.Like]);
@@ -64,7 +64,7 @@ public class SqlitePostRepositoryTests : DatabaseTestBase
 
         var all = Posts.GetAll();
 
-        Assert.AreEqual(2, all.Count);
+        Assert.HasCount(2, all);
         Assert.AreEqual("negdugeer", all[0].Text);
         Assert.AreEqual("hoyrdugaar", all[1].Text);
     }
@@ -77,13 +77,13 @@ public class SqlitePostRepositoryTests : DatabaseTestBase
 
         var all = Posts.GetAll();
 
-        Assert.AreEqual(1, all[0].Comments.Count);
+        Assert.HasCount(1, all[0].Comments);
     }
 
     [TestMethod]
     public void GetAll_ReturnsEmpty_WhenNoPosts()
     {
-        Assert.AreEqual(0, Posts.GetAll().Count);
+        Assert.IsEmpty(Posts.GetAll());
     }
 
     [TestMethod]
@@ -96,8 +96,8 @@ public class SqlitePostRepositoryTests : DatabaseTestBase
         Posts.Delete(1);
 
         Assert.IsNull(Posts.GetById(1));
-        Assert.AreEqual(0, Comments.GetByPost(1).Count);
-        Assert.AreEqual(0, Reactions.GetByPost(1).Count);
+        Assert.IsEmpty(Comments.GetByPost(1));
+        Assert.IsEmpty(Reactions.GetByPost(1));
     }
 
     [TestMethod]

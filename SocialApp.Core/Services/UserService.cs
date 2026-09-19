@@ -4,7 +4,6 @@ using SocialApp.Core.Security;
 
 namespace SocialApp.Core.Services;
 
-/// <summary>Business logic for users. The console app calls this instead of the repository directly.</summary>
 public class UserService
 {
     private readonly IRepository<User> _userRepository;

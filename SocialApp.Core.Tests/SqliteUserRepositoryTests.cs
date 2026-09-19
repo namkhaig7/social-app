@@ -37,7 +37,7 @@ public class SqliteUserRepositoryTests : DatabaseTestBase
 
         var all = Users.GetAll();
 
-        Assert.AreEqual(2, all.Count);
+        Assert.HasCount(2, all);
         Assert.AreEqual("mandu", all[0].Username);
         Assert.AreEqual("namhai", all[1].Username);
     }
@@ -45,7 +45,7 @@ public class SqliteUserRepositoryTests : DatabaseTestBase
     [TestMethod]
     public void GetAll_ReturnsEmpty_WhenNoUsers()
     {
-        Assert.AreEqual(0, Users.GetAll().Count);
+        Assert.IsEmpty(Users.GetAll());
     }
 
     [TestMethod]

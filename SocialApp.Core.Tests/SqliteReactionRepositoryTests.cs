@@ -12,7 +12,7 @@ public class SqliteReactionRepositoryTests : DatabaseTestBase
 
         var loaded = Reactions.GetByPost(1);
 
-        Assert.AreEqual(1, loaded.Count);
+        Assert.HasCount(1, loaded);
         Assert.AreEqual(ReactionType.Haha, loaded[7]);
     }
 
@@ -25,7 +25,7 @@ public class SqliteReactionRepositoryTests : DatabaseTestBase
 
         var loaded = Reactions.GetByPost(1);
 
-        Assert.AreEqual(1, loaded.Count, "neg hereglegch neg l reactiontai baih ystoi");
+        Assert.HasCount(1, loaded, "neg hereglegch neg l reactiontai baih ystoi");
         Assert.AreEqual(ReactionType.Angry, loaded[7]);
     }
 
@@ -37,7 +37,7 @@ public class SqliteReactionRepositoryTests : DatabaseTestBase
 
         var loaded = Reactions.GetByPost(1);
 
-        Assert.AreEqual(2, loaded.Count);
+        Assert.HasCount(2, loaded);
         Assert.AreEqual(ReactionType.Like, loaded[7]);
         Assert.AreEqual(ReactionType.Angry, loaded[8]);
     }
@@ -55,7 +55,7 @@ public class SqliteReactionRepositoryTests : DatabaseTestBase
     [TestMethod]
     public void GetByPost_ReturnsEmpty_WhenNoReactions()
     {
-        Assert.AreEqual(0, Reactions.GetByPost(99).Count);
+        Assert.IsEmpty(Reactions.GetByPost(99));
     }
 
     [TestMethod]
@@ -66,7 +66,7 @@ public class SqliteReactionRepositoryTests : DatabaseTestBase
 
         Reactions.DeleteByPost(1);
 
-        Assert.AreEqual(0, Reactions.GetByPost(1).Count);
-        Assert.AreEqual(1, Reactions.GetByPost(2).Count);
+        Assert.IsEmpty(Reactions.GetByPost(1));
+        Assert.HasCount(1, Reactions.GetByPost(2));
     }
 }

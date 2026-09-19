@@ -38,48 +38,120 @@ public partial class Form1 : Form
 
         // Fixed pixel sizes below assume no auto DPI/font rescaling.
         AutoScaleMode = AutoScaleMode.None;
-        Font = new Font("Segoe UI", 11F);
+        Font = new Font("Segoe UI", 10F);
         Text = "SocialApp";
         ClientSize = new Size(760, 900);
         MinimumSize = new Size(700, 500);
+        BackColor = Color.FromArgb(240, 242, 245);
 
         // Baruun deed buland: nevtersen hereglegchiin ner + Logout
-        var userBar = new FlowLayoutPanel
+        var userBar = new Panel
         {
             Dock = DockStyle.Top,
-            Height = 44,
-            FlowDirection = FlowDirection.RightToLeft,
-            WrapContents = false,
-            Padding = new Padding(8, 6, 8, 0)
+            Height = 60,
+            BackColor = Color.White,
+            Padding = new Padding(16, 12, 16, 12)
         };
-        var logoutButton = new Button { Text = "Log out", AutoSize = true };
+        
+        var userBarFlow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.RightToLeft,
+            WrapContents = false
+        };
+        
+        var logoutButton = new ModernButton 
+        { 
+            Text = "Log out", 
+            BackColor = Color.FromArgb(220, 53, 69),
+            HoverBackColor = Color.FromArgb(200, 35, 51),
+            ForeColor = Color.White,
+            Height = 36
+        };
         logoutButton.Click += (_, _) =>
         {
             LoggedOut = true;
             Close();
         };
+        
         var userLabel = new Label
         {
-            Text = _currentUser.Username,
-            Font = new Font(Font, FontStyle.Bold),
+            Text = $"👤 {_currentUser.Username}",
+            Font = new Font("Segoe UI", 11F, FontStyle.Bold),
             AutoSize = true,
-            Margin = new Padding(0, 6, 8, 0)
+            Margin = new Padding(0, 8, 16, 0),
+            ForeColor = Color.FromArgb(50, 50, 50)
         };
-        userBar.Controls.Add(logoutButton);
-        userBar.Controls.Add(userLabel);
+        
+        userBarFlow.Controls.Add(logoutButton);
+        userBarFlow.Controls.Add(userLabel);
+        userBar.Controls.Add(userBarFlow);
 
-        // FlowLayoutPanel
-        var topPanel = new FlowLayoutPanel { Dock = DockStyle.Top, Height = 52, WrapContents = false, Padding = new Padding(8) };
-        _postInput = new TextBox { Width = 330 };
-        var imageButton = new Button { Text = "Add Image", AutoSize = true, Margin = new Padding(8, 0, 0, 0) };
+        // Create post panel with modern styling
+        var topPanel = new Panel 
+        { 
+            Dock = DockStyle.Top, 
+            Height = 90, 
+            BackColor = Color.White,
+            Padding = new Padding(16)
+        };
+        
+        var postContainer = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            WrapContents = false,
+            FlowDirection = FlowDirection.TopDown
+        };
+        
+        var inputRow = new FlowLayoutPanel { AutoSize = true, WrapContents = false };
+        _postInput = new TextBox 
+        { 
+            Width = 480,
+            Height = 32,
+            Font = new Font("Segoe UI", 10F),
+            BorderStyle = BorderStyle.FixedSingle,
+            Text = "What's on your mind?"
+        };
+        _postInput.Enter += (_, _) => { if (_postInput.Text == "What's on your mind?") _postInput.Clear(); };
+        _postInput.Leave += (_, _) => { if (string.IsNullOrWhiteSpace(_postInput.Text)) _postInput.Text = "What's on your mind?"; };
+        
+        var imageButton = new ModernButton 
+        { 
+            Text = "📷 Image", 
+            Margin = new Padding(8, 0, 0, 0),
+            BackColor = Color.FromArgb(108, 117, 125),
+            HoverBackColor = Color.FromArgb(90, 98, 104),
+            ForeColor = Color.White,
+            Height = 32
+        };
         imageButton.Click += (_, _) => PickImage();
-        var postButton = new Button { Text = "Post", AutoSize = true, Margin = new Padding(8, 0, 0, 0) };
+        
+        var postButton = new ModernButton 
+        { 
+            Text = "Post", 
+            Margin = new Padding(8, 0, 0, 0),
+            BackColor = Color.FromArgb(0, 123, 255),
+            HoverBackColor = Color.FromArgb(0, 105, 217),
+            ForeColor = Color.White,
+            Height = 32
+        };
         postButton.Click += (_, _) => CreatePost();
-        _pickedImageLabel = new Label { AutoSize = true, Margin = new Padding(8, 6, 0, 0), ForeColor = Color.Gray };
-        topPanel.Controls.Add(_postInput);
-        topPanel.Controls.Add(imageButton);
-        topPanel.Controls.Add(postButton);
-        topPanel.Controls.Add(_pickedImageLabel);
+        
+        inputRow.Controls.Add(_postInput);
+        inputRow.Controls.Add(imageButton);
+        inputRow.Controls.Add(postButton);
+        
+        _pickedImageLabel = new Label 
+        { 
+            AutoSize = true, 
+            Margin = new Padding(0, 8, 0, 0), 
+            ForeColor = Color.FromArgb(108, 117, 125),
+            Font = new Font("Segoe UI", 9F, FontStyle.Italic)
+        };
+        
+        postContainer.Controls.Add(inputRow);
+        postContainer.Controls.Add(_pickedImageLabel);
+        topPanel.Controls.Add(postContainer);
 
         _feed = new FlowLayoutPanel
         {
@@ -133,10 +205,11 @@ public partial class Form1 : Form
     private void CreatePost()
     {
         // Zurag songoson bol text hooson baisan ch post hiij bolno
-        if (string.IsNullOrWhiteSpace(_postInput.Text) && _pendingImagePath is null) return;
+        var text = _postInput.Text == "What's on your mind?" ? "" : _postInput.Text;
+        if (string.IsNullOrWhiteSpace(text) && _pendingImagePath is null) return;
 
-        _postService.CreatePost(_currentUser.Id, _postInput.Text, _pendingImagePath);
-        _postInput.Clear();
+        _postService.CreatePost(_currentUser.Id, text, _pendingImagePath);
+        _postInput.Text = "What's on your mind?";
         _pendingImagePath = null;
         _pickedImageLabel.Text = "";
         RefreshFeed();
@@ -171,76 +244,200 @@ public partial class Form1 : Form
     {
         var author = _userService.GetById(post.AuthorId);
 
-        // Min/Max urgeniig tentsuu bolgood urgenii ni tsoolno - ingesneer post bur ijil
-        // urguntei bolj huree ni vertical-aar tentsene. Undur ni aguulgaasaa hamaarna
+        // Modern rounded card with shadow
+        var card = new RoundedPanel
+        {
+            MinimumSize = new Size(CardWidth, 0),
+            MaximumSize = new Size(CardWidth, 0),
+            AutoSize = true,
+            AutoSizeMode = AutoSizeMode.GrowAndShrink,
+            Margin = new Padding(8),
+            Padding = new Padding(20),
+            BackColor = Color.White,
+            CornerRadius = 12,
+            BorderColor = Color.FromArgb(230, 230, 230)
+        };
+        
         var layout = new FlowLayoutPanel
         {
+            Dock = DockStyle.Fill,
             FlowDirection = FlowDirection.TopDown,
             WrapContents = false,
             AutoSize = true,
-            AutoSizeMode = AutoSizeMode.GrowAndShrink,
-            MinimumSize = new Size(CardWidth, 0),
-            MaximumSize = new Size(CardWidth, 0),
-            BorderStyle = BorderStyle.FixedSingle,
-            Margin = new Padding(8),
-            Padding = new Padding(10)
+            AutoSizeMode = AutoSizeMode.GrowAndShrink
         };
 
-        layout.Controls.Add(new Label
+        // Author name with timestamp
+        var authorLabel = new Label
         {
-            Text = author?.Username ?? "Unknown",
-            Font = new Font(Font, FontStyle.Bold),
-            AutoSize = true
-        });
-
-        layout.Controls.Add(new Label
-        {
-            Text = post.Text,
+            Text = $"👤 {author?.Username ?? "Unknown"}",
+            Font = new Font("Segoe UI", 11F, FontStyle.Bold),
             AutoSize = true,
-            MaximumSize = new Size(CardWidth - 40, 0)
-        });
+            ForeColor = Color.FromArgb(50, 50, 50)
+        };
+        layout.Controls.Add(authorLabel);
+        
+        var timeLabel = new Label
+        {
+            Text = GetRelativeTime(post.CreatedAt),
+            Font = new Font("Segoe UI", 8.5F),
+            AutoSize = true,
+            ForeColor = Color.FromArgb(150, 150, 150),
+            Margin = new Padding(0, -4, 0, 12)
+        };
+        layout.Controls.Add(timeLabel);
+
+        // Post text
+        if (!string.IsNullOrWhiteSpace(post.Text))
+        {
+            layout.Controls.Add(new Label
+            {
+                Text = post.Text,
+                AutoSize = true,
+                MaximumSize = new Size(CardWidth - 60, 0),
+                Font = new Font("Segoe UI", 10F),
+                ForeColor = Color.FromArgb(70, 70, 70),
+                Margin = new Padding(0, 0, 0, 12)
+            });
+        }
 
         // Zuragtai post bol zurgiig ni haruulna (SocialApp.Images-eer 512x512 bolgoson)
         if (post.ImagePath is not null && File.Exists(post.ImagePath))
         {
-            layout.Controls.Add(new PictureBox
+            var pictureBox = new PictureBox
             {
                 Image = LoadImageCopy(post.ImagePath),
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Size = new Size(PostImageSize, PostImageSize),
-                Margin = new Padding(0, 6, 0, 6)
-            });
+                Margin = new Padding(0, 0, 0, 12)
+            };
+            layout.Controls.Add(pictureBox);
         }
+        
+        // Separator line
+        var separator = new Panel
+        {
+            Height = 1,
+            Width = CardWidth - 60,
+            BackColor = Color.FromArgb(230, 230, 230),
+            Margin = new Padding(0, 4, 0, 12)
+        };
+        layout.Controls.Add(separator);
 
         //  4 emoji picker
-        var picker = new ReactionBar { Visible = false, Margin = new Padding(0, 4, 0, 0), AccessibleName = "ReactionPicker" };
+        var picker = new ReactionBar { Visible = false, Margin = new Padding(0, 8, 0, 0), AccessibleName = "ReactionPicker" };
 
         // zadalj haruulah mor - anhandaa haragdahgui
-        var breakdownLabel = new Label { AutoSize = true, Visible = false };
+        var breakdownLabel = new Label 
+        { 
+            AutoSize = true, 
+            Visible = false,
+            Font = new Font("Segoe UI", 8.5F),
+            ForeColor = Color.FromArgb(120, 120, 120),
+            Margin = new Padding(0, 4, 0, 0)
+        };
 
         // Comment bichih talbar - "Comment" darahad l haragdana
-        var commentInput = new TextBox { Width = 400 };
-        var commentSubmit = new Button { Text = "Submit", AutoSize = true };
-        var commentInputRow = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Visible = false, Margin = new Padding(0, 4, 0, 0) };
+        var commentInput = new TextBox 
+        { 
+            Width = 400,
+            Font = new Font("Segoe UI", 9.5F),
+            Height = 28
+        };
+        var commentSubmit = new ModernButton 
+        { 
+            Text = "Submit",
+            Height = 28,
+            BackColor = Color.FromArgb(40, 167, 69),
+            HoverBackColor = Color.FromArgb(33, 136, 56),
+            ForeColor = Color.White
+        };
+        var commentInputRow = new FlowLayoutPanel 
+        { 
+            AutoSize = true, 
+            WrapContents = false, 
+            Visible = false, 
+            Margin = new Padding(0, 8, 0, 0) 
+        };
         commentInputRow.Controls.Add(commentInput);
         commentInputRow.Controls.Add(commentSubmit);
 
         // Bui comment-uud - dandaa haragdana
-        var commentsLabel = new Label { AutoSize = true, Margin = new Padding(0, 4, 0, 0), Text = FormatComments(post) };
+        var commentsLabel = new Label 
+        { 
+            AutoSize = true, 
+            Margin = new Padding(0, 8, 0, 0), 
+            Text = FormatComments(post),
+            Font = new Font("Segoe UI", 9.5F),
+            ForeColor = Color.FromArgb(80, 80, 80),
+            MaximumSize = new Size(CardWidth - 60, 0)
+        };
 
-        // Dock: [Like N] [N] [Comment N] [Share N]
-        var reactionButton = new Button { AutoSize = true };
-        var reactionCountLink = new LinkLabel { AutoSize = true, Margin = new Padding(0, 6, 12, 0) };
-        var commentButton = new Button { AutoSize = true, Text = $"Comment {post.Comments.Count}" };
-        var shareButton = new Button { AutoSize = true, Text = $"Share {post.SharesCount}" };
+        // Action buttons with modern styling
+        var reactionButton = new ModernButton 
+        { 
+            Height = 32,
+            Margin = new Padding(0, 0, 8, 0)
+        };
+        var reactionCountLink = new LinkLabel 
+        { 
+            AutoSize = true, 
+            Margin = new Padding(0, 8, 16, 0),
+            Font = new Font("Segoe UI", 9F, FontStyle.Bold),
+            LinkColor = Color.FromArgb(100, 100, 100),
+            ActiveLinkColor = Color.FromArgb(0, 123, 255)
+        };
+        var commentButton = new ModernButton 
+        { 
+            Text = $"💬 Comment ({post.Comments.Count})",
+            Height = 32,
+            Margin = new Padding(0, 0, 8, 0)
+        };
+        var shareButton = new ModernButton 
+        { 
+            Text = $"🔄 Share ({post.SharesCount})",
+            Height = 32
+        };
 
         void RefreshReactionButton()
         {
-            var dominant = post.Reactions.OrderByDescending(r => r.Value).First();
-            reactionButton.Text = dominant.Key.ToString();
-            reactionButton.ForeColor = ReactionBar.GetColor(dominant.Key);
-            reactionCountLink.Text = dominant.Value.ToString();
-            breakdownLabel.Text = string.Join("   ", post.Reactions.Select(r => $"{r.Key}: {r.Value}"));
+            // Show current user's reaction if they reacted, otherwise show default "Like"
+            var userReaction = post.GetUserReaction(_currentUser.Id);
+            ReactionType displayReaction;
+            int displayCount;
+            
+            if (userReaction.HasValue)
+            {
+                // User has reacted - show their reaction
+                displayReaction = userReaction.Value;
+                displayCount = post.Reactions[displayReaction];
+            }
+            else
+            {
+                // User hasn't reacted - show default "Like" button
+                displayReaction = ReactionType.Like;
+                displayCount = post.Reactions[ReactionType.Like];
+            }
+                
+            var emoji = displayReaction switch
+            {
+                ReactionType.Like => "👍",
+                ReactionType.Haha => "😂",
+                ReactionType.Sad => "😢",
+                ReactionType.Angry => "😠",
+                _ => "👍"
+            };
+            
+            // Button shows user's reaction or default Like
+            reactionButton.Text = $"{emoji} {displayReaction}";
+            reactionButton.ForeColor = ReactionBar.GetColor(displayReaction);
+            
+            // Link shows total reaction count across all types
+            var totalReactions = post.Reactions.Values.Sum();
+            reactionCountLink.Text = $"{totalReactions} reactions";
+            
+            // Breakdown shows all reactions with counts > 0
+            breakdownLabel.Text = string.Join("  •  ", post.Reactions.Where(r => r.Value > 0).Select(r => $"{r.Key}: {r.Value}"));
         }
         RefreshReactionButton();
 
@@ -254,14 +451,13 @@ public partial class Form1 : Form
         picker.ReactionSelected += (_, e) =>
         {
             _postService.ReactPost(post.Id, _currentUser.Id, e.Reaction);
-            RefreshReactionButton();
-            picker.Visible = false;
+            RefreshFeed();
         };
 
         shareButton.Click += (_, _) =>
         {
             _postService.SharePost(post.Id);
-            shareButton.Text = $"Share {post.SharesCount}";
+            RefreshFeed();
         };
 
         // "Comment" darahad text oruulah tal haragdana or alga bolno
@@ -270,24 +466,26 @@ public partial class Form1 : Form
         {
             if (string.IsNullOrWhiteSpace(commentInput.Text)) return;
             _postService.CommentOnPost(post.Id, _currentUser.Id, commentInput.Text);
-            commentsLabel.Text = FormatComments(post);
-            commentButton.Text = $"Comment {post.Comments.Count}";
-            commentInput.Clear();
+            RefreshFeed();
         };
 
-        var dock = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 8, 0, 0) };
+        var dock = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 0, 0, 0) };
         dock.Controls.Add(reactionButton);
-        dock.Controls.Add(reactionCountLink);
         dock.Controls.Add(commentButton);
         dock.Controls.Add(shareButton);
+        
+        var statsRow = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0, 8, 0, 0) };
+        statsRow.Controls.Add(reactionCountLink);
 
         layout.Controls.Add(dock);
+        layout.Controls.Add(statsRow);
         layout.Controls.Add(picker);
         layout.Controls.Add(breakdownLabel);
         layout.Controls.Add(commentInputRow);
         layout.Controls.Add(commentsLabel);
-
-        return layout;
+        
+        card.Controls.Add(layout);
+        return card;
     }
 
     //comment haragdah baidal
@@ -298,8 +496,25 @@ public partial class Form1 : Form
         var lines = post.Comments.Select(c =>
         {
             var author = _userService.GetById(c.AuthorId)?.Username ?? "Unknown";
-            return $"{author} : {c.Text}";
+            return $"💬 {author}: {c.Text}";
         });
         return string.Join("\n", lines);
+    }
+    
+    // Relative time display (e.g., "5 minutes ago")
+    private string GetRelativeTime(DateTime dateTime)
+    {
+        var timeSpan = DateTime.Now - dateTime;
+        
+        if (timeSpan.TotalMinutes < 1)
+            return "just now";
+        if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes} minutes ago";
+        if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours} hours ago";
+        if (timeSpan.TotalDays < 7)
+            return $"{(int)timeSpan.TotalDays} days ago";
+        
+        return dateTime.ToString("MMM dd, yyyy");
     }
 }

@@ -40,7 +40,7 @@ public class UserServiceTests : DatabaseTestBase
         var second = _service.Register("namhai", 21, "b@mail.com", "1234");
 
         Assert.AreNotEqual(first.Id, second.Id);
-        Assert.AreEqual(2, _service.GetAllUsers().Count);
+        Assert.HasCount(2, _service.GetAllUsers());
     }
 
     [TestMethod]
